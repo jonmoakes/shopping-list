@@ -24,7 +24,7 @@
       "purpose": "maskable"
     }    
   ],
-  "start_url": "/",
+  "start_url": "https://jonmoakes.github.io/shopping-list/",
   "display": "standalone",
   "theme_color": "pink",
   "background_color": "#C497EE",
