@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { useAlert } from "react-alert";
@@ -19,15 +18,13 @@ import {
 const Header = ({ currentUser, history, dispatch }) => {
   const alert = useAlert();
 
-  const [loggedOut, setLoggedOut] = useState(false);
-
   function userHasLoggedOut() {
     return [
       dispatch(clearEntries()),
       dispatch(clearFloatingAddButton()),
       auth.signOut(),
       alert.success("You Have Signed Out!"),
-      setLoggedOut(true),
+      history.push("/"),
     ];
   }
   function logoutConfirmBox() {
@@ -38,7 +35,6 @@ const Header = ({ currentUser, history, dispatch }) => {
 
   return (
     <HeaderDiv>
-      {loggedOut && <Redirect to="/" />}
       {currentUser && (
         <HeaderNavigationItems>
           <ul>
