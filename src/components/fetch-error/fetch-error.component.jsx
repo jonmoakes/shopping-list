@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { ErrorDiv } from "../styles/div/div.styles";
 const FetchError = ({ error }) => {
   return (
@@ -15,10 +14,6 @@ const FetchError = ({ error }) => {
           page and trying again.
         </li>
       </ul>
-
-      <p>
-        please <Link to="/contact">Contact Me</Link> if the error persists.
-      </p>
     </ErrorDiv>
   );
 };
