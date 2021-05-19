@@ -1,6 +1,6 @@
-import { Component } from "react";
+import { useEffect } from "react";
 import { lazy, Suspense } from "react";
-import { Route, Redirect } from "react-router-dom";
+import { Route, Redirect, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
@@ -12,8 +12,7 @@ import Loader from "./components/loader/loader.component.jsx";
 import Header from "./components/header/header.component.jsx";
 
 import { selectCurrentUser } from "./redux/user/user.selectors";
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
-import { setCurrentUser } from "./redux/user/user.actions";
+import { checkUserSession } from "./redux/user/user.actions";
 
 const TableViewPage = lazy(() =>
   import("./pages/entry-page/table-view-page/table-view-page.component")
@@ -23,89 +22,57 @@ const AddEntryPage = lazy(() =>
 );
 
 const LoginPage = lazy(() => import("./pages/login-page/login-page.component"));
+const HomePage = lazy(() => import("./pages/home-page/home-page.component"));
 
-class App extends Component {
-  unsubscribeFromAuth = null;
+const App = ({ currentUser, checkUserSession }) => {
+  const location = useLocation();
 
-  componentDidMount() {
-    const { setCurrentUser } = this.props;
+  useEffect(() => {
+    checkUserSession();
+  }, [checkUserSession]);
 
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
-
-        userRef.onSnapshot((snapShot) => {
-          setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data(),
-          });
-        });
-      }
-      setCurrentUser(userAuth);
-    });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
-  }
-
-  render() {
-    return (
-      <div>
-        <GlobalStyle />
+  return (
+    <div>
+      <GlobalStyle />
+      {location.pathname !== "/" && location.pathname !== "/login" ? (
         <Header />
+      ) : null}
 
-        <ScrollToTopAuto>
-          <ErrorBoundary>
-            <Suspense fallback={<Loader />}>
-              <Route
-                exact
-                path="/"
-                render={() =>
-                  this.props.currentUser ? (
-                    <Redirect to="/table" />
-                  ) : (
-                    <LoginPage />
-                  )
-                }
-              />
-
-              <Route
-                exact
-                path="/login"
-                render={() => (this.props.currentUser ? null : <LoginPage />)}
-              />
-
-              <Route
-                exact
-                path="/add-entry"
-                render={() =>
-                  this.props.currentUser ? <AddEntryPage /> : null
-                }
-              />
-
-              <Route
-                exact
-                path="/table"
-                render={() =>
-                  this.props.currentUser ? <TableViewPage /> : null
-                }
-              />
-            </Suspense>
-          </ErrorBoundary>
-        </ScrollToTopAuto>
-        <ScrollToTopButton />
-      </div>
-    );
-  }
-}
+      <ScrollToTopAuto>
+        <ErrorBoundary>
+          <Suspense fallback={<Loader />}>
+            <Route exact path="/" component={HomePage} />
+            <Route
+              exact
+              path="/login"
+              render={() =>
+                currentUser ? <Redirect to="/table" /> : <LoginPage />
+              }
+            />
+            <Route
+              exact
+              path="/add-entry"
+              render={() => (currentUser ? <AddEntryPage /> : null)}
+            />
+            <Route
+              exact
+              path="/table"
+              render={() => (currentUser ? <TableViewPage /> : null)}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      </ScrollToTopAuto>
+      <ScrollToTopButton />
+    </div>
+  );
+};
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+  checkUserSession: () => dispatch(checkUserSession()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,12 +1,11 @@
 import LogIn from "../../components/log-in/log-in.component";
 
-import { Container } from "../../components/styles/container/container.styles";
 import { Div } from "../../components/styles/div/div.styles";
 import { Heading } from "../../components/styles/heading/heading.styles";
 import { Span } from "../../components/styles/span/span.styles";
 
 const LoginPage = () => (
-  <Container>
+  <div style={{ marginTop: "50px" }}>
     <Div>
       <Heading style={{ marginBottom: "-20px" }}>
         Shopping List
@@ -15,7 +14,7 @@ const LoginPage = () => (
       </Heading>
     </Div>
     <LogIn />
-  </Container>
+  </div>
 );
 
 export default LoginPage;

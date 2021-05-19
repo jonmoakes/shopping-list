@@ -1,36 +1,34 @@
 import { useState } from "react";
-import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { useAlert } from "react-alert";
 
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
-import { auth } from "../../firebase/firebase.utils.js";
-import { Div } from "../../components/styles/div/div.styles";
+import { emailSignInStart } from "../../redux/user/user.actions";
 
+import Loader from "../loader/loader.component";
+
+import { Div } from "../../components/styles/div/div.styles";
 import { Form } from "./log-in.styles";
 import { Heading } from "../../components/styles/heading/heading.styles";
 
-const LogIn = ({ history }) => {
+const LogIn = ({ history, emailSignInStart }) => {
   const [userCredentials, setCredentials] = useState({
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const { email, password } = userCredentials;
   const alert = useAlert();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-      setCredentials({ email: "", password: "" });
-      alert.success("Success! Logging You In! :)");
-      history.push("/table");
-    } catch (error) {
-      alert.error("Username And / Or Password Incorrect. Please Try Again");
-      setCredentials({ email: "", password: "" });
-    }
+    alert.info("Logging You In!");
+    setIsLoading(true);
+    setIsDisabled(true);
+    await emailSignInStart(email, password);
   };
 
   const handleChange = (event) => {
@@ -40,6 +38,7 @@ const LogIn = ({ history }) => {
 
   return (
     <Div>
+      {isLoading ? <Loader /> : null}
       <Heading>Log In</Heading>
 
       <Form onSubmit={handleSubmit}>
@@ -61,10 +60,21 @@ const LogIn = ({ history }) => {
           placeholder="Please Enter Your Password"
           required
         />
-        <CustomButton type="submit">Log In</CustomButton>
+        {isDisabled === false ? (
+          <CustomButton type="submit">Log In</CustomButton>
+        ) : (
+          <CustomButton type="button" disabled>
+            Logging In...
+          </CustomButton>
+        )}
       </Form>
     </Div>
   );
 };
 
-export default withRouter(LogIn);
+const mapDispatchToProps = (dispatch) => ({
+  emailSignInStart: (email, password) =>
+    dispatch(emailSignInStart({ email, password })),
+});
+
+export default connect(null, mapDispatchToProps)(LogIn);

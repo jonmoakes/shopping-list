@@ -3,10 +3,10 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { useAlert } from "react-alert";
 
-import { auth } from "../../firebase/firebase.utils.js";
 import { selectCurrentUser } from "../../redux/user/user.selectors.js";
 import { clearEntries } from "../../redux/entry/entry.actions.js";
 import { clearFloatingAddButton } from "../../redux/floating-add-button/floating-add-button.actions.js";
+import { signOutStart } from "../../redux/user/user.actions";
 
 import {
   HeaderDiv,
@@ -16,18 +16,19 @@ import {
   Title,
 } from "./header.styles";
 
-const Header = ({ currentUser, history, dispatch }) => {
+const Header = ({ currentUser, history, dispatch, signOutStart }) => {
   const alert = useAlert();
 
   function userHasLoggedOut() {
     return [
-      dispatch(clearEntries()),
-      dispatch(clearFloatingAddButton()),
-      auth.signOut(),
-      alert.success("You Have Signed Out!"),
-      history.push("/login"),
+      clearFloatingAddButton(),
+      clearEntries(),
+      signOutStart(),
+      alert.success("You Have Successfully Signed Out!"),
+      history.push("/"),
     ];
   }
+
   function logoutConfirmBox() {
     window.confirm("Are You Sure You Want To Log Out?")
       ? userHasLoggedOut()
@@ -56,4 +57,10 @@ const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
 });
 
-export default withRouter(connect(mapStateToProps)(Header));
+const mapDispatchToProps = (dispatch) => ({
+  signOutStart: () => dispatch(signOutStart()),
+  clearFloatingAddButton: () => dispatch(clearFloatingAddButton()),
+  clearEntries: () => dispatch(clearEntries()),
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
