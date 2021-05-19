@@ -28,7 +28,7 @@ const options = {
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter basename="/shopping-list">
         <AlertProvider template={AlertTemplate} {...options}>
           <PersistGate persistor={persistor}>
             <App />
