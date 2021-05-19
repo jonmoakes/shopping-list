@@ -59,3 +59,23 @@ export const LogoutIconText = styled.p`
     font-size: 14px;
   }
 `;
+
+export const Title = styled.h1`
+  margin-top: -100px;
+  text-shadow: none;
+  text-decoration: underline;
+
+  @media screen and (max-width: 600px) {
+    font-size: 25px;
+    margin-top: -85px;
+  }
+
+  @media screen and (max-width: 450px) {
+    font-size: 20px;
+    margin-top: -65px;
+  }
+
+  @media screen and (max-width: 320px) {
+    display: none;
+  }
+`;

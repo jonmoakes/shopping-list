@@ -13,6 +13,7 @@ import {
   HeaderNavigationItems,
   LogoutIcon,
   LogoutIconText,
+  Title,
 } from "./header.styles";
 
 const Header = ({ currentUser, history, dispatch }) => {
@@ -45,6 +46,8 @@ const Header = ({ currentUser, history, dispatch }) => {
           </ul>
         </HeaderNavigationItems>
       )}
+
+      <Title>San's Shopping List</Title>
     </HeaderDiv>
   );
 };
