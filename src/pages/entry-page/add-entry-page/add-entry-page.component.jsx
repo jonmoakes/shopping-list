@@ -81,8 +81,11 @@ const AddEntryPage = ({ history, entries, currentUser }) => {
         entries: [...entries, ent],
       });
 
-      if (errorMessage === "") {
+      if (errorMessage === "" && entry.entry !== "Rose") {
         alert.success(entryAddedSuccessMessage);
+        history.push("/table");
+      } else if (errorMessage === "" && entry.entry === "Rose") {
+        alert.success("More Rose?!! 🙄🙄🙄😂");
         history.push("/table");
       }
     } catch (error) {
