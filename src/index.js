@@ -15,7 +15,7 @@ import reportWebVitals from "./reportWebVitals";
 
 const options = {
   position: positions.BOTTOM_CENTER,
-  timeout: 7000,
+  timeout: 3000,
   transition: transitions.SCALE,
 
   containerStyle: {
