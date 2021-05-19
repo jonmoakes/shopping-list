@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Component } from "react";
 import { lazy, Suspense } from "react";
 import { Route } from "react-router-dom";
 import { connect } from "react-redux";
@@ -24,57 +24,69 @@ const AddEntryPage = lazy(() =>
 
 const LoginPage = lazy(() => import("./pages/login-page/login-page.component"));
 
-const App = ({ setCurrentUser, currentUser }) => {
-  useEffect(() => {
-    let unsubscribeFromAuth = null;
-    unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+class App extends Component {
+  unsubscribeFromAuth = null;
+
+  componentDidMount() {
+    const { setCurrentUser } = this.props;
+
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
 
-        userRef.onSnapshot((snapshot) => {
+        userRef.onSnapshot((snapShot) => {
           setCurrentUser({
-            currentUser: {
-              id: snapshot.id,
-              ...snapshot.data(),
-            },
+            id: snapShot.id,
+            ...snapShot.data(),
           });
         });
-      } else {
-        setCurrentUser(userAuth);
       }
+      setCurrentUser(userAuth);
     });
+  }
 
-    return () => {
-      unsubscribeFromAuth();
-    };
-  }, [setCurrentUser]);
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
 
-  return (
-    <div>
-      <GlobalStyle />
-      <Header />
+  render() {
+    return (
+      <div>
+        <GlobalStyle />
+        <Header />
 
-      <ScrollToTopAuto>
-        <ErrorBoundary>
-          <Suspense fallback={<Loader />}>
-            <Route path="/" component={LoginPage} />
+        <ScrollToTopAuto>
+          <ErrorBoundary>
+            <Suspense fallback={<Loader />}>
+              <Route
+                exact
+                path="/"
+                render={() => (this.props.currentUser ? null : <LoginPage />)}
+              />
 
-            <Route
-              path="/add-entry"
-              render={() => (this.props.currentUser ? <AddEntryPage /> : null)}
-            />
+              <Route
+                exact
+                path="/add-entry"
+                render={() =>
+                  this.props.currentUser ? <AddEntryPage /> : null
+                }
+              />
 
-            <Route
-              path="/table"
-              render={() => (this.props.currentUser ? <TableViewPage /> : null)}
-            />
-          </Suspense>
-        </ErrorBoundary>
-      </ScrollToTopAuto>
-      <ScrollToTopButton />
-    </div>
-  );
-};
+              <Route
+                exact
+                path="/table"
+                render={() =>
+                  this.props.currentUser ? <TableViewPage /> : null
+                }
+              />
+            </Suspense>
+          </ErrorBoundary>
+        </ScrollToTopAuto>
+        <ScrollToTopButton />
+      </div>
+    );
+  }
+}
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
