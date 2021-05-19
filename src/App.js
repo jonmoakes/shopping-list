@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { lazy, Suspense } from "react";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
@@ -61,6 +61,18 @@ class App extends Component {
               <Route
                 exact
                 path="/"
+                render={() =>
+                  this.props.currentUser ? (
+                    <Redirect to="/table" />
+                  ) : (
+                    <LoginPage />
+                  )
+                }
+              />
+
+              <Route
+                exact
+                path="/login"
                 render={() => (this.props.currentUser ? null : <LoginPage />)}
               />
 

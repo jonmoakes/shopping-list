@@ -24,7 +24,7 @@ const Header = ({ currentUser, history, dispatch }) => {
       dispatch(clearFloatingAddButton()),
       auth.signOut(),
       alert.success("You Have Signed Out!"),
-      history.push("/"),
+      history.push("/login"),
     ];
   }
   function logoutConfirmBox() {
